@@ -1,5 +1,6 @@
 import express from 'express'
 import routes from './routes'
+import { resolve } from 'path'
 import './database'
 class App {
   constructor() {
@@ -9,7 +10,11 @@ class App {
   }
 
   Middleware() {
-    this.app.use(express.json()) // parse request of content type application/json
+    this.app.use(express.json())
+    this.app.use(
+      '/product-file',
+      express.static(resolve(__dirname, '..', 'uploads')),
+    )
   }
 
   Routes() {
