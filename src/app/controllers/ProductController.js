@@ -12,20 +12,36 @@ class ProductController {
     try {
       await schema.validate(req.body, { abortEarly: false })
     } catch (error) {
-      // Retornando erros de validação
       return res.status(400).json({ error: error.errors })
     }
+
     const { filename: path } = req.file
     const { name, price, category } = req.body
 
-    const product = await Product.create({ name, price, category, path })
+    try {
+      // Verificar se já existe um produto com o mesmo nome
+      const existingProduct = await Product.findOne({ where: { name } })
+      if (existingProduct) {
+        return res
+          .status(400)
+          .json({ error: 'Já existe um produto com esse nome.' })
+      }
 
-    return res.json(product)
+      // Criar um novo produto usando os dados fornecidos
+      const product = await Product.create({ name, price, category, path })
+      return res.json(product)
+    } catch (error) {
+      return res.status(500).json({ error: 'Erro ao criar o produto.' })
+    }
   }
-  async index(req, res) {
-    const products = await Product.findAll()
 
-    return res.json(products)
+  async index(req, res) {
+    try {
+      const products = await Product.findAll()
+      return res.json(products)
+    } catch (error) {
+      return res.status(500).json({ error: 'Erro ao buscar os produtos.' })
+    }
   }
 }
 
