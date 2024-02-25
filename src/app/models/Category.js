@@ -8,9 +8,9 @@ class Category extends Model {
       },
       {
         sequelize,
-        modelName: 'category', // Nome do modelo na base de dados (opcional)
       },
     )
+    return this
   }
 }
 

@@ -1,12 +1,13 @@
 import * as Yup from 'yup'
 import Product from '../models/Product'
+import Category from '../models/Category'
 
 class ProductController {
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       price: Yup.number().required(),
-      category: Yup.string().required(),
+      category_id: Yup.number().required(),
     })
 
     try {
@@ -16,7 +17,7 @@ class ProductController {
     }
 
     const { filename: path } = req.file
-    const { name, price, category } = req.body
+    const { name, price, category_id } = req.body
 
     try {
       // Verificar se já existe um produto com o mesmo nome
@@ -28,7 +29,7 @@ class ProductController {
       }
 
       // Criar um novo produto usando os dados fornecidos
-      const product = await Product.create({ name, price, category, path })
+      const product = await Product.create({ name, price, category_id, path })
       return res.json(product)
     } catch (error) {
       return res.status(500).json({ error: 'Erro ao criar o produto.' })
@@ -37,7 +38,15 @@ class ProductController {
 
   async index(req, res) {
     try {
-      const products = await Product.findAll()
+      const products = await Product.findAll({
+        include: [
+          {
+            model: Category,
+            as: 'category',
+            attributes: ['id', 'name'],
+          },
+        ],
+      })
       return res.json(products)
     } catch (error) {
       return res.status(500).json({ error: 'Erro ao buscar os produtos.' })
