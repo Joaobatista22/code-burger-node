@@ -5,6 +5,7 @@ import UserController from './app/controllers/UserController'
 import SessionController from './app/controllers/SessionController'
 import ProductController from './app/controllers/ProductController'
 import CategoryController from './app/controllers/CategoryController'
+import OrderController from './app/controllers/OrderController'
 import authMiddleware from './app/middlewares/auth'
 
 const upload = multer(multerConfig)
@@ -19,4 +20,7 @@ routes.get('/products', ProductController.index) // Rota para listar todos os pr
 // Rotas de categorias
 routes.post('/categories', CategoryController.store) // Rota para criar uma categoria
 routes.get('/categories', CategoryController.index) // Rota para listar todas as categorias
+
+routes.post('/orders', OrderController.store) // Rota para criar uma categoria
+
 module.exports = routes

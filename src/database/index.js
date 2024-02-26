@@ -12,23 +12,23 @@ class Database {
     this.init()
     this.mongo()
   }
+
   init() {
     this.connection = new Sequelize(configDatabase)
-    models
-      .map((model) => model.init(this.connection))
-      .map(
-        (model) => model.associate && model.associate(this.connection.models),
-      )
+    models.forEach((model) => model.init(this.connection))
+    models.forEach(
+      (model) => model.associate && model.associate(this.connection.models),
+    )
   }
+
   // Connecting MongoDB
   async mongo() {
-    this.mongoConnection = await mongoose.connect(
-      'mongodb://localhost:27017/codeburger',
-      {
-        useNewUrlParser: true,
-      },
-    )
-    console.log('Conectado com o banco de dados MongoDB!')
+    try {
+      await mongoose.connect('mongodb://localhost:27017/codeburger')
+      console.log('Conectado com o banco de dados MongoDB!')
+    } catch (err) {
+      console.error('Erro na conexão com o MongoDB:', err)
+    }
   }
 }
 
