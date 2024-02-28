@@ -49,9 +49,37 @@ class OrderController {
         name: req.userName,
       },
       products: editedProduct,
+      status: 'Pedido realizado',
+    }
+    const orderResponse = await Order.create(order)
+
+    return res.status(201).json(orderResponse)
+  }
+  async index(req, res) {
+    const orders = await Order.find()
+    return res.json(orders)
+  }
+  async update(req, res) {
+    const schema = Yup.object().shape({
+      status: Yup.string().required(),
+    })
+    try {
+      // Valide os dados do usuário com o schema Yup
+      await schema.validate(req.body, { abortEarly: false })
+    } catch (error) {
+      // Se houver erros de validação, retorne uma mensagem de erro detalhada
+      return res.status(400).json({ error: error.errors })
     }
 
-    return res.status(201).json(editedProduct)
+    const { id } = req.params
+    const { status } = req.body
+    try {
+      await Order.updateOne({ _id: id }, { status: status })
+    } catch (error) {
+      return res.status(400).json({ error: error.message })
+    }
+
+    return res.json({ message: 'Status atualizado com sucesso' })
   }
 }
 

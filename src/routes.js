@@ -22,5 +22,7 @@ routes.post('/categories', CategoryController.store) // Rota para criar uma cate
 routes.get('/categories', CategoryController.index) // Rota para listar todas as categorias
 
 routes.post('/orders', OrderController.store) // Rota para criar uma categoria
+routes.put('/orders/:id', OrderController.update)
+routes.get('/orders', OrderController.index) // Rota para listar orders
 
 module.exports = routes
