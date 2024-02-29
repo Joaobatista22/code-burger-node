@@ -1,6 +1,7 @@
 import * as Yup from 'yup'
 import Product from '../models/Product'
 import Category from '../models/Category'
+import User from '../models/User'
 
 class ProductController {
   async store(req, res) {
@@ -14,6 +15,12 @@ class ProductController {
       await schema.validate(req.body, { abortEarly: false })
     } catch (error) {
       return res.status(400).json({ error: error.errors })
+    }
+    const { admin: isAdmin } = await User.findByPk(req.userId)
+    if (!isAdmin) {
+      return res
+        .status(401)
+        .json({ error: 'Only admins can create categories' })
     }
 
     const { filename: path } = req.file

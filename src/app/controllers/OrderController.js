@@ -2,6 +2,7 @@ import * as Yup from 'yup'
 import Product from '../models/Product'
 import Category from '../models/Category'
 import Order from '../schemas/Order'
+import User from '../models/User'
 
 class OrderController {
   async store(req, res) {
@@ -69,6 +70,10 @@ class OrderController {
     } catch (error) {
       // Se houver erros de validação, retorne uma mensagem de erro detalhada
       return res.status(400).json({ error: error.errors })
+    }
+    const { admin: isAdmin } = await User.findByPk(req.userId)
+    if (!isAdmin) {
+      return res.status(401).json({ error: 'Only admins can update orders' })
     }
 
     const { id } = req.params

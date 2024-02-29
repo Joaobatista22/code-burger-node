@@ -1,5 +1,6 @@
 import * as Yup from 'yup'
 import Category from '../models/Category'
+import User from '../models/User'
 
 class CategoryController {
   async store(req, res) {
@@ -12,6 +13,12 @@ class CategoryController {
     } catch (error) {
       // Retornando erros de validação
       return res.status(400).json({ error: error.errors })
+    }
+    const { admin: isAdmin } = await User.findByPk(req.userId)
+    if (!isAdmin) {
+      return res
+        .status(401)
+        .json({ error: 'Only admins can create categories' })
     }
 
     const { name } = req.body
