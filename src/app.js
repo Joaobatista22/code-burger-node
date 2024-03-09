@@ -1,17 +1,17 @@
 import express from 'express'
 import routes from './routes'
 import { resolve } from 'path'
-import cors from 'cors'
+import cors from 'cors'; // Importe o módulo cors
 import './database'
 class App {
   constructor() {
     this.app = express()
-    this.app.use(cors())
     this.Middleware()
     this.Routes()
   }
 
   Middleware() {
+    this.app.use(cors())
     this.app.use(express.json())
     this.app.use(
       '/product-file',
