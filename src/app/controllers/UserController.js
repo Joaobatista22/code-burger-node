@@ -21,7 +21,7 @@ class UserController {
       // Verifique se o email já existe no banco de dados
       const existingUser = await User.findOne({ where: { email } })
       if (existingUser) {
-        return res.status(400).json({ error: 'Email already exists' })
+        return res.status(409).json({ error: 'Email already exists' })
       }
 
       // Crie uma instância do modelo User
