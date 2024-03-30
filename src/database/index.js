@@ -25,7 +25,7 @@ class Database {
   async mongo() {
     try {
       await mongoose.connect('mongodb://localhost:27017/codeburger')
-      console.log('Conectado com o banco de dados MongoDB!')
+      console.log('Conectado MongoDB!')
     } catch (err) {
       console.error('Erro na conexão com o MongoDB:', err)
     }
