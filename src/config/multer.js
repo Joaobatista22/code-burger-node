@@ -4,12 +4,11 @@ import { extname, resolve } from 'path'
 
 export default {
   storage: multer.diskStorage({
-    //Caminho onde será armazenado o arquivo
     destination: resolve(__dirname, '..', '..', 'uploads'),
 
     //Nome do arquivo
     filename(req, file, cb) {
-      return cb(null, `${uuidv4()} + ${extname(file.originalname)}`)
+      return cb(null, uuidv4() + extname(file.originalname))
     },
   }),
 }

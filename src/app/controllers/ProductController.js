@@ -1,7 +1,7 @@
-import * as Yup from 'yup'
-import Product from '../models/Product'
-import Category from '../models/Category'
-import User from '../models/User'
+import * as Yup from 'yup';
+import Product from '../models/Product';
+import Category from '../models/Category';
+import User from '../models/User';
 
 class ProductController {
   async store(req, res) {
@@ -10,44 +10,39 @@ class ProductController {
       price: Yup.number().required(),
       category_id: Yup.number().required(),
       offer: Yup.boolean(),
-    })
+    });
 
     try {
-      await schema.validate(req.body, { abortEarly: false })
+      await schema.validate(req.body, { abortEarly: false });
     } catch (error) {
-      return res.status(400).json({ error: error.errors })
+      return res.status(400).json({ error: error.errors });
     }
 
-    const { admin: isAdmin } = await User.findByPk(req.userId)
+    const { admin: isAdmin } = await User.findByPk(req.userId);
     if (!isAdmin) {
-      return res
-        .status(401)
-        .json({ error: 'Only admins can create categories' })
+      return res.status(401).json({ error: 'Only admins can create products' });
     }
 
-    const { filename: path } = req.file
-    const { name, price, category_id, offer } = req.body
+    const { filename: path } = req.file;
+    const { name, price, category_id, offer } = req.body;
 
     try {
-      // Verificar se já existe um produto com o mesmo nome
-      const existingProduct = await Product.findOne({ where: { name } })
+      const existingProduct = await Product.findOne({ where: { name } });
       if (existingProduct) {
-        return res
-          .status(400)
-          .json({ error: 'Já existe um produto com esse nome.' })
+        return res.status(400).json({ error: 'Product with this name already exists.' });
       }
 
-      // Criar um novo produto usando os dados fornecidos
       const product = await Product.create({
         name,
         price,
         category_id,
         path,
         offer,
-      })
-      return res.json(product)
+      });
+      return res.status(201).json(product);
     } catch (error) {
-      return res.status(500).json({ error: 'Erro ao criar o produto.' })
+      console.error('Error creating product:', error);
+      throw new Error('Error creating product. Please try again later.');
     }
   }
 
@@ -61,10 +56,11 @@ class ProductController {
             attributes: ['id', 'name'],
           },
         ],
-      })
-      return res.json(products)
+      });
+      return res.json(products);
     } catch (error) {
-      return res.status(500).json({ error: 'Erro ao buscar os produtos.' })
+      console.error('Error fetching products:', error);
+      throw new Error('Error fetching products. Please try again later.');
     }
   }
 
@@ -74,32 +70,30 @@ class ProductController {
       price: Yup.number(),
       category_id: Yup.number(),
       offer: Yup.boolean(),
-    })
+    });
 
     try {
-      await schema.validate(req.body, { abortEarly: false })
+      await schema.validate(req.body, { abortEarly: false });
 
-      const { admin: isAdmin } = await User.findByPk(req.userId)
+      const { admin: isAdmin } = await User.findByPk(req.userId);
       if (!isAdmin) {
-        return res
-          .status(401)
-          .json({ error: 'Only admins can create categories' })
+        return res.status(401).json({ error: 'Only admins can update products' });
       }
 
-      const { id } = req.params
-      const product = await Product.findByPk(id)
+      const { id } = req.params;
+      const product = await Product.findByPk(id);
       if (!product) {
-        return res.status(404).json({ error: 'Product not found' })
+        return res.status(404).json({ error: 'Product not found' });
       }
 
-      let path
+      let path;
       if (req.file) {
-        path = req.file.filename
+        path = req.file.filename;
       } else {
-        path = product.path
+        path = product.path;
       }
 
-      const { name, price, category_id, offer } = req.body
+      const { name, price, category_id, offer } = req.body;
 
       await Product.update(
         {
@@ -110,13 +104,14 @@ class ProductController {
           offer,
         },
         { where: { id } },
-      )
+      );
 
-      return res.status(200).json()
+      return res.status(200).json();
     } catch (error) {
-      return res.status(500).json(error)
+      console.error('Error updating product:', error);
+      throw new Error('Error updating product. Please try again later.');
     }
   }
 }
 
-export default new ProductController()
+export default new ProductController();
