@@ -8,7 +8,7 @@ export default {
 
     //Nome do arquivo
     filename(req, file, cb) {
-      return cb(null, uuidv4() + extname(file.originalname))
+      return cb(null, uuidv4()+extname(file.originalname))
     },
   }),
 }
