@@ -26,6 +26,12 @@ class ProductController {
     const { filename: path } = req.file;
     const { name, price, category_id, offer } = req.body;
 
+
+    const category = await Category.findByPk(category_id);
+    if (!category) {
+      return res.status(400).json({ error: 'Category not found' });
+    }
+
     try {
       const existingProduct = await Product.findOne({ where: { name } });
       if (existingProduct) {
@@ -42,7 +48,7 @@ class ProductController {
       return res.status(201).json(product);
     } catch (error) {
       console.error('Error creating product:', error);
-      throw new Error('Error creating product. Please try again later.');
+      return res.status(500).json({ error: 'Error creating product. Please try again later.' });
     }
   }
 
@@ -60,7 +66,7 @@ class ProductController {
       return res.json(products);
     } catch (error) {
       console.error('Error fetching products:', error);
-      throw new Error('Error fetching products. Please try again later.');
+      return res.status(500).json({ error: 'Error fetching products. Please try again later.' });
     }
   }
 
@@ -95,6 +101,11 @@ class ProductController {
 
       const { name, price, category_id, offer } = req.body;
 
+      const category = await Category.findByPk(category_id);
+      if (!category) {
+        return res.status(400).json({ error: 'Category not found' });
+      }
+
       await Product.update(
         {
           name,
@@ -103,13 +114,13 @@ class ProductController {
           path,
           offer,
         },
-        { where: { id } },
+        { where: { id } }
       );
 
       return res.status(200).json();
     } catch (error) {
       console.error('Error updating product:', error);
-      throw new Error('Error updating product. Please try again later.');
+      return res.status(500).json({ error: 'Error updating product. Please try again later.' });
     }
   }
 }
