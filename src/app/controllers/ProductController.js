@@ -18,21 +18,25 @@ class ProductController {
       return res.status(400).json({ error: error.errors });
     }
 
-    const { admin: isAdmin } = await User.findByPk(req.userId);
-    if (!isAdmin) {
-      return res.status(401).json({ error: 'Only admins can create products' });
-    }
-
-    const { filename: path } = req.file;
-    const { name, price, category_id, offer } = req.body;
-
-
-    const category = await Category.findByPk(category_id);
-    if (!category) {
-      return res.status(400).json({ error: 'Category not found' });
-    }
-
     try {
+      const user = await User.findByPk(req.userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const { admin: isAdmin } = user;
+      if (!isAdmin) {
+        return res.status(401).json({ error: 'Only admins can create products' });
+      }
+
+      const { filename: path } = req.file;
+      const { name, price, category_id, offer } = req.body;
+
+      const category = await Category.findByPk(category_id);
+      if (!category) {
+        return res.status(400).json({ error: 'Category not found' });
+      }
+
       const existingProduct = await Product.findOne({ where: { name } });
       if (existingProduct) {
         return res.status(400).json({ error: 'Product with this name already exists.' });
@@ -45,6 +49,7 @@ class ProductController {
         path,
         offer,
       });
+
       return res.status(201).json(product);
     } catch (error) {
       console.error('Error creating product:', error);
@@ -63,6 +68,7 @@ class ProductController {
           },
         ],
       });
+
       return res.json(products);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -81,7 +87,12 @@ class ProductController {
     try {
       await schema.validate(req.body, { abortEarly: false });
 
-      const { admin: isAdmin } = await User.findByPk(req.userId);
+      const user = await User.findByPk(req.userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const { admin: isAdmin } = user;
       if (!isAdmin) {
         return res.status(401).json({ error: 'Only admins can update products' });
       }
@@ -92,13 +103,7 @@ class ProductController {
         return res.status(404).json({ error: 'Product not found' });
       }
 
-      let path;
-      if (req.file) {
-        path = req.file.filename;
-      } else {
-        path = product.path;
-      }
-
+      const path = req.file ? req.file.filename : product.path;
       const { name, price, category_id, offer } = req.body;
 
       const category = await Category.findByPk(category_id);
@@ -107,13 +112,7 @@ class ProductController {
       }
 
       await Product.update(
-        {
-          name,
-          price,
-          category_id,
-          path,
-          offer,
-        },
+        { name, price, category_id, path, offer },
         { where: { id } }
       );
 
