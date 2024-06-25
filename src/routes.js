@@ -16,20 +16,20 @@ routes.get('/', (req, res) => {
     return res.json({message: 'Hello to my first api'})
 })
 
-routes.post('/users', UserController.store) //Rota Criar um usuário
-routes.post('/sessions', SessionController.store) //Rota Fazer login no sistema
-routes.use(authMiddleware) // Middleware de autenticação aplicado a todas as rotas abaixo
-// Rotas de produtos
-routes.post('/products', upload.single('file'), ProductController.store) // Rota para criar um produto
-routes.get('/products', ProductController.index) // Rota para listar todos os produtos
-routes.put('/products/:id', upload.single('file'), ProductController.update) // rota para editar produtos
+routes.post('/users', UserController.store) 
+routes.post('/sessions', SessionController.store) 
+routes.use(authMiddleware) 
+
+routes.post('/products', upload.single('file'), ProductController.store) 
+routes.get('/products', ProductController.index) 
+routes.put('/products/:id', upload.single('file'), ProductController.update) 
 // Rotas de categorias
-routes.post('/categories', upload.single('file'), CategoryController.store) // Rota para criar uma categoria
-routes.get('/categories', CategoryController.index) // Rota para listar todas as categorias
+routes.post('/categories', upload.single('file'), CategoryController.store) 
+routes.get('/categories', CategoryController.index) 
 routes.put('/categories/:id', upload.single('file'), CategoryController.update)
 
-routes.post('/orders', OrderController.store) // Rota para criar uma categoria
+routes.post('/orders', OrderController.store) 
 routes.put('/orders/:id', OrderController.update)
-routes.get('/orders', OrderController.index) // Rota para listar orders
+routes.get('/orders', OrderController.index)
 
 module.exports = routes
